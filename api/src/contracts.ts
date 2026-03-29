@@ -62,7 +62,7 @@ router.post('/', async (c) => {
   await new Contract({
     _id:          id,
     passwordHash: hashPassword(password),
-    type:         body.type ?? 'nda',
+    type:         body.type,
     data:         body.data,
   }).save();
 
