@@ -59,7 +59,7 @@ function NdaGenericForm({ data, onChange }: FormProps) {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           <div className="field">
             <label className="field-label">Nom / Raison sociale *</label>
-            <input value={d.party1.name} onChange={setP1('name')} placeholder="Ex : JOSSELIN BRUNET" required />
+            <input value={d.party1.name} onChange={setP1('name')} placeholder="Ex : DBYFly" required />
           </div>
           <div className="grid-2">
             <div className="field">
@@ -80,7 +80,7 @@ function NdaGenericForm({ data, onChange }: FormProps) {
           </div>
           <div className="field">
             <label className="field-label">Adresse du siège social *</label>
-            <input value={d.party1.address} onChange={setP1('address')} placeholder="29 RUE TRONCHET, 75008 PARIS" required />
+            <input value={d.party1.address} onChange={setP1('address')} placeholder="1 RUE DES ENTREPRENEURS, 75001 PARIS" required />
           </div>
           <div className="grid-2">
             <div className="field">
