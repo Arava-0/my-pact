@@ -1,0 +1,68 @@
+services:
+  pact-db:
+    image: mongo:7
+    container_name: pact-db
+    env_file: .env
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
+      MONGO_INITDB_DATABASE: ${MONGO_DATABASE}
+    volumes:
+      - pact-mongo-data:/data/db
+      - ./api/scripts/init-db.js:/docker-entrypoint-initdb.d/init-db.js:ro
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "mongosh --quiet --username \"$$MONGO_ROOT_USERNAME\" --password \"$$MONGO_ROOT_PASSWORD\" --authenticationDatabase admin --eval \"db.adminCommand('ping').ok\" | grep -q 1"
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    networks:
+      - pact-network
+    restart: unless-stopped
+
+  pact-api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    image: pact-api:latest
+    container_name: pact-api
+    env_file: .env
+    environment:
+      PORT: 3000
+      MONGO_URI: "mongodb://${MONGO_USER}:${MONGO_PASSWORD}@pact-db:27017/${MONGO_DATABASE}?authSource=${MONGO_DATABASE}"
+    ports:
+      - "8101:3000"
+    volumes:
+      - pact-uploads:/app/data/uploads
+    depends_on:
+      pact-db:
+        condition: service_healthy
+    networks:
+      - pact-network
+    restart: unless-stopped
+
+  pact-web:
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+    image: pact-web:latest
+    container_name: pact-web
+    ports:
+      - "8100:80"
+    depends_on:
+      - pact-api
+    networks:
+      - pact-network
+    restart: unless-stopped
+
+networks:
+  pact-network:
+    driver: bridge
+
+volumes:
+  pact-mongo-data:
+  pact-uploads:
