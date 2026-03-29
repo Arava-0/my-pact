@@ -12,27 +12,7 @@ export interface ContractData {
   id: string;
   type: string;
   status: 'draft' | 'party1_signed' | 'completed';
-  data: {
-    party1: {
-      name: string;
-      entityType: string;
-      siret: string;
-      address: string;
-      representativeName: string;
-      representativeTitle: string;
-    };
-    party2: {
-      civility: string;
-      name: string;
-      address: string;
-      status: string;
-      siren: string;
-      function: string;
-    };
-    effectiveDate: string;
-    city: string;
-    documentDate: string;
-  };
+  data: Record<string, unknown>;
   files: FileAttachment[];
   party1SignedAt: string | null;
   party2SignedAt: string | null;
