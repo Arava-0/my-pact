@@ -52,7 +52,7 @@ async function authenticate(id: string, password: string) {
 router.post('/', async (c) => {
   const body = await c.req.json();
 
-  if (!body.data?.party1?.name || !body.data?.party2?.name) {
+  if (!body.type || typeof body.data !== 'object' || body.data === null) {
     return c.json({ error: 'Missing required fields' }, 400);
   }
 
