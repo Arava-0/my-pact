@@ -4,6 +4,19 @@ import { getContract, signContract, uploadFile, deleteFile, openFile, type Contr
 import Footer from '../components/Footer';
 import { templates } from '../templates/index';
 
+function expirationBanner(expiresAt: string | null) {
+  if (!expiresAt) return null;
+  const days = Math.ceil((new Date(expiresAt).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+  if (days <= 0) return null;
+  const color = days <= 3 ? 'var(--red)' : days <= 5 ? '#d97706' : 'var(--muted)';
+  const bg    = days <= 3 ? '#fff1f0' : days <= 5 ? '#fffbeb' : 'var(--surface)';
+  return (
+    <div style={{ background: bg, border: `1px solid ${color}`, borderRadius: '6px', padding: '0.6rem 1rem', marginBottom: '1.25rem', fontSize: '0.875rem', color, fontWeight: 500 }}>
+      Ce contrat expire dans {days} jour{days > 1 ? 's' : ''} — il sera supprimé s'il n'est pas signé.
+    </div>
+  );
+}
+
 function statusBadge(status: ContractData['status']) {
   if (status === 'completed')
     return <span className="badge badge-done">✓ Signé par les deux parties</span>;
@@ -140,6 +153,8 @@ export default function Contract() {
             <Link to="/" style={{ fontSize: '1.25rem', fontWeight: 800, letterSpacing: '-0.04em', color: 'var(--black)' }}>pact.</Link>
             {statusBadge(status)}
           </div>
+
+          {expirationBanner(contract.expiresAt)}
 
           {/* Document */}
           <div style={{ background: 'var(--white)', borderRadius: 'var(--radius)', boxShadow: 'var(--shadow)', padding: 'clamp(2rem, 6vw, 4.5rem)', marginBottom: '1.25rem' }}>

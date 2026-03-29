@@ -58,12 +58,14 @@ router.post('/', async (c) => {
 
   const id = generateId();
   const password = generatePassword();
+  const expiresAt = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000);
 
   await new Contract({
     _id:          id,
     passwordHash: hashPassword(password),
     type:         body.type,
     data:         body.data,
+    expiresAt,
   }).save();
 
   return c.json({ id, password });
@@ -98,6 +100,7 @@ router.post('/:id/sign', async (c) => {
     contract.party2SignedIp = ip;
     contract.status         = 'completed';
     contract.completedAt    = now;
+    contract.expiresAt      = null;
   } else {
     return c.json({ error: 'party must be "party1" or "party2"' }, 400);
   }

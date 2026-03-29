@@ -18,6 +18,7 @@ export interface ContractData {
   party2SignedAt: string | null;
   createdAt: string;
   completedAt: string | null;
+  expiresAt: string | null;
 }
 
 export async function createContract(body: { type: string; data: unknown }): Promise<{ id: string; password: string }> {

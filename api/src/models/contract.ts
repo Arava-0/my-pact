@@ -22,6 +22,7 @@ export interface IContract {
   party2SignedIp: string | null;
   createdAt: Date;
   completedAt: Date | null;
+  expiresAt: Date | null;
 }
 
 const fileSchema = new Schema<FileAttachment>(
@@ -49,6 +50,7 @@ const contractSchema = new Schema<IContract>(
     party2SignedAt: { type: Date,   default: null },
     party2SignedIp: { type: String, default: null },
     completedAt:   { type: Date,   default: null },
+    expiresAt:     { type: Date,   default: null },
   },
   {
     timestamps: { createdAt: 'createdAt', updatedAt: false },

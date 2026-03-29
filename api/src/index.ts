@@ -3,6 +3,7 @@ import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { connectDB } from './db.js';
 import contracts from './contracts.js';
+import { startCleanup } from './cleanup.js';
 
 const app = new Hono();
 
@@ -21,11 +22,12 @@ app.get('/health', (c) => c.json({ ok: true }));
 const PORT = Number(process.env.PORT ?? 3000);
 
 connectDB()
-  .then(() =>
+  .then(() => {
+    startCleanup();
     serve({ fetch: app.fetch, port: PORT }, () =>
       console.log(`Pact API → http://localhost:${PORT}`)
-    )
-  )
+    );
+  })
   .catch((err) => {
     console.error('Startup failed:', err);
     process.exit(1);
