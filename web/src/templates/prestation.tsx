@@ -5,6 +5,7 @@ import { fmtDate, docStyle, articleTitle, para, ul, li, SignatureBlock } from '.
 interface PrestationData {
   client: { firstName: string; lastName: string; tradeName: string; siret: string; address: string };
   provider: { firstName: string; lastName: string; siret: string; address: string };
+  objetDuContrat: string;
   missions: string;
   revenueShare: number;
   paymentDeadline: number;
@@ -22,6 +23,7 @@ function defaultData(): Record<string, unknown> {
   return {
     client: { firstName: '', lastName: '', tradeName: '', siret: '', address: '' },
     provider: { firstName: '', lastName: '', siret: '', address: '' },
+    objetDuContrat: '',
     missions: 'Développement technique\nMaintenance et corrections\nParticipation à l\'amélioration des fonctionnalités',
     revenueShare: 20,
     paymentDeadline: 15,
@@ -61,17 +63,17 @@ function PrestationForm({ data, onChange }: FormProps) {
           <div className="grid-2">
             <div className="field">
               <label className="field-label">Prénom *</label>
-              <input value={d.client.firstName} onChange={setClient('firstName')} placeholder="Quentin" required />
+              <input value={d.client.firstName} onChange={setClient('firstName')} placeholder="Jean" required />
             </div>
             <div className="field">
               <label className="field-label">Nom *</label>
-              <input value={d.client.lastName} onChange={setClient('lastName')} placeholder="Dupont" required />
+              <input value={d.client.lastName} onChange={setClient('lastName')} placeholder="Martin" required />
             </div>
           </div>
           <div className="grid-2">
             <div className="field">
               <label className="field-label">Nom commercial</label>
-              <input value={d.client.tradeName} onChange={setClient('tradeName')} placeholder="Emerixe" />
+              <input value={d.client.tradeName} onChange={setClient('tradeName')} placeholder="DBYFly" />
             </div>
             <div className="field">
               <label className="field-label">Numéro SIRET</label>
@@ -91,11 +93,11 @@ function PrestationForm({ data, onChange }: FormProps) {
           <div className="grid-2">
             <div className="field">
               <label className="field-label">Prénom *</label>
-              <input value={d.provider.firstName} onChange={setProvider('firstName')} placeholder="Albin" required />
+              <input value={d.provider.firstName} onChange={setProvider('firstName')} placeholder="Marie" required />
             </div>
             <div className="field">
               <label className="field-label">Nom *</label>
-              <input value={d.provider.lastName} onChange={setProvider('lastName')} placeholder="Martin" required />
+              <input value={d.provider.lastName} onChange={setProvider('lastName')} placeholder="Dupont" required />
             </div>
           </div>
           <div className="field">
@@ -106,6 +108,20 @@ function PrestationForm({ data, onChange }: FormProps) {
             <label className="field-label">Adresse *</label>
             <input value={d.provider.address} onChange={setProvider('address')} placeholder="5 avenue des Lilas, 69001 Lyon" required />
           </div>
+        </div>
+      </div>
+
+      <div className="card" style={{ marginBottom: '1rem' }}>
+        <div className="section-title">Objet du contrat</div>
+        <div className="field">
+          <label className="field-label">Objet de la prestation * (article 1)</label>
+          <textarea
+            value={d.objetDuContrat}
+            onChange={setRoot('objetDuContrat')}
+            placeholder="Ex : Le présent contrat a pour objet de définir les conditions dans lesquelles le Prestataire intervient dans le cadre du développement et de la maintenance d'une application web exploitée par le Client."
+            required
+            style={{ resize: 'vertical', minHeight: '80px' }}
+          />
         </div>
       </div>
 
@@ -218,7 +234,7 @@ function PrestationDocument({ data, party1SignedAt, party2SignedAt }: DocumentPr
       <hr style={{ border: 'none', borderTop: '1px solid #d1d5db', margin: '1.5rem 0' }} />
 
       <p style={articleTitle}>ARTICLE 1 — OBJET</p>
-      <p style={para}>Le présent contrat a pour objet de définir les conditions dans lesquelles le Prestataire intervient dans le cadre du développement, de la maintenance et/ou de l'exploitation d'un serveur de jeu en ligne exploité par le Client.</p>
+      <p style={para}>{d.objetDuContrat}</p>
 
       <p style={articleTitle}>ARTICLE 2 — MISSIONS DU PRESTATAIRE</p>
       <p style={para}>Le Prestataire s'engage à réaliser les missions suivantes :</p>
@@ -267,10 +283,7 @@ function PrestationDocument({ data, party1SignedAt, party2SignedAt }: DocumentPr
       <p style={articleTitle}>ARTICLE 8 — RESPONSABILITÉS</p>
       <p style={para}>Chaque partie est responsable de ses obligations légales, fiscales et sociales. Le Prestataire est responsable de ses propres déclarations en tant que micro-entrepreneur.</p>
 
-      <p style={articleTitle}>ARTICLE 9 — CONFORMITÉ</p>
-      <p style={para}>Le Client s'engage à respecter les conditions d'utilisation de Mojang Studios concernant la monétisation du serveur.</p>
-
-      <p style={articleTitle}>ARTICLE 10 — DROIT APPLICABLE</p>
+      <p style={articleTitle}>ARTICLE 9 — DROIT APPLICABLE</p>
       <p style={para}>Le présent contrat est soumis au <strong>droit français</strong>. Tout litige sera soumis aux tribunaux compétents.</p>
 
       <hr style={{ border: 'none', borderTop: '2px solid #1a1a1a', margin: '2rem 0 1.5rem' }} />
@@ -287,8 +300,9 @@ function PrestationDocument({ data, party1SignedAt, party2SignedAt }: DocumentPr
 
 export const prestation: Template = {
   id: 'prestation',
+  category: 'Prestation de services',
   label: 'Contrat de prestation',
-  description: 'Rémunération variable indexée sur le chiffre d\'affaires.',
+  description: 'Rémunération variable indexée sur le chiffre d\'affaires. Objet de la prestation libre.',
   party1Label: 'Le Client',
   party2Label: 'Le Prestataire',
   defaultData,

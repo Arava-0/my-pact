@@ -2,9 +2,13 @@ import React from 'react';
 import type { Template, FormProps, DocumentProps } from './index';
 import { fmtDate, docStyle, articleTitle, para, ul, li, SignatureBlock } from './shared';
 
-interface NdaData {
+interface NdaGenericData {
   party1: { name: string; entityType: string; siret: string; address: string; representativeName: string; representativeTitle: string };
   party2: { civility: string; name: string; address: string; status: string; siren: string; function: string };
+  contexte: string;
+  categoriesInfosConf: string;
+  dureeAns: number;
+  juridiction: string;
   effectiveDate: string;
   city: string;
   documentDate: string;
@@ -12,30 +16,41 @@ interface NdaData {
 
 const today = () => new Date().toISOString().split('T')[0];
 
+const DEFAULT_CATEGORIES = `Informations techniques et commerciales
+Données clients et partenaires
+Documents contractuels et financiers
+Tout document ou information identifié comme confidentiel`;
+
 function defaultData(): Record<string, unknown> {
   return {
     party1: { name: '', entityType: 'Entreprise individuelle', siret: '', address: '', representativeName: '', representativeTitle: 'Gérant' },
-    party2: { civility: 'Monsieur', name: '', address: '', status: 'Bénévole', siren: '', function: 'Développeur' },
+    party2: { civility: 'Monsieur', name: '', address: '', status: 'Bénévole', siren: '', function: '' },
+    contexte: '',
+    categoriesInfosConf: DEFAULT_CATEGORIES,
+    dureeAns: 5,
+    juridiction: '',
     effectiveDate: today(),
-    city: 'Paris',
+    city: '',
     documentDate: today(),
   };
 }
 
-function NdaForm({ data, onChange }: FormProps) {
-  const d = data as unknown as NdaData;
+function NdaGenericForm({ data, onChange }: FormProps) {
+  const d = data as unknown as NdaGenericData;
 
-  const setP1 = (field: keyof NdaData['party1']) =>
+  const setP1 = (field: keyof NdaGenericData['party1']) =>
     (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
       onChange({ ...d, party1: { ...d.party1, [field]: e.target.value } });
 
-  const setP2 = (field: keyof NdaData['party2']) =>
+  const setP2 = (field: keyof NdaGenericData['party2']) =>
     (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
       onChange({ ...d, party2: { ...d.party2, [field]: e.target.value } });
 
-  const setRoot = (field: keyof Pick<NdaData, 'effectiveDate' | 'city' | 'documentDate'>) =>
-    (e: React.ChangeEvent<HTMLInputElement>) =>
-      onChange({ ...d, [field]: e.target.value });
+  const set = (field: keyof Omit<NdaGenericData, 'party1' | 'party2'>) =>
+    (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      const value = field === 'dureeAns' ? Number(e.target.value) : e.target.value;
+      onChange({ ...d, [field]: value });
+    };
 
   return (
     <>
@@ -116,27 +131,64 @@ function NdaForm({ data, onChange }: FormProps) {
               <input value={d.party2.siren} onChange={setP2('siren')} placeholder="123 456 789" />
             </div>
             <div className="field">
-              <label className="field-label">Fonction *</label>
-              <input value={d.party2.function} onChange={setP2('function')} placeholder="Développeur" required />
+              <label className="field-label">Fonction</label>
+              <input value={d.party2.function} onChange={setP2('function')} placeholder="Consultant" />
             </div>
           </div>
         </div>
       </div>
 
+      <div className="card" style={{ marginBottom: '1rem' }}>
+        <div className="section-title">Contenu du NDA</div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          <div className="field">
+            <label className="field-label">Contexte de la collaboration * (préambule)</label>
+            <textarea
+              value={d.contexte}
+              onChange={set('contexte')}
+              placeholder="Ex : Dans le cadre du lancement de leur nouveau produit, la Société est amenée à confier au Collaborateur des missions impliquant l'accès à des informations sensibles."
+              required
+              style={{ resize: 'vertical', minHeight: '80px' }}
+            />
+          </div>
+          <div className="field">
+            <label className="field-label">Catégories d'informations confidentielles * (une par ligne)</label>
+            <textarea
+              value={d.categoriesInfosConf}
+              onChange={set('categoriesInfosConf')}
+              required
+              style={{ resize: 'vertical', minHeight: '100px' }}
+            />
+          </div>
+        </div>
+      </div>
+
       <div className="card" style={{ marginBottom: '1.5rem' }}>
-        <div className="section-title">Détails du contrat</div>
-        <div className="grid-3">
-          <div className="field">
-            <label className="field-label">Date d'effet *</label>
-            <input type="date" value={d.effectiveDate} onChange={setRoot('effectiveDate')} required />
+        <div className="section-title">Durée et juridiction</div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          <div className="grid-3">
+            <div className="field">
+              <label className="field-label">Date d'effet *</label>
+              <input type="date" value={d.effectiveDate} onChange={set('effectiveDate')} required />
+            </div>
+            <div className="field">
+              <label className="field-label">Ville *</label>
+              <input value={d.city} onChange={set('city')} placeholder="Paris" required />
+            </div>
+            <div className="field">
+              <label className="field-label">Date du document *</label>
+              <input type="date" value={d.documentDate} onChange={set('documentDate')} required />
+            </div>
           </div>
-          <div className="field">
-            <label className="field-label">Ville *</label>
-            <input value={d.city} onChange={setRoot('city')} placeholder="Paris" required />
-          </div>
-          <div className="field">
-            <label className="field-label">Date du document *</label>
-            <input type="date" value={d.documentDate} onChange={setRoot('documentDate')} required />
+          <div className="grid-2">
+            <div className="field">
+              <label className="field-label">Durée de confidentialité après fin de collaboration (ans) *</label>
+              <input type="number" min={1} max={20} value={d.dureeAns} onChange={set('dureeAns')} required />
+            </div>
+            <div className="field">
+              <label className="field-label">Juridiction (tribunaux compétents) *</label>
+              <input value={d.juridiction} onChange={set('juridiction')} placeholder="Paris" required />
+            </div>
           </div>
         </div>
       </div>
@@ -144,8 +196,10 @@ function NdaForm({ data, onChange }: FormProps) {
   );
 }
 
-function NdaDocument({ data, party1SignedAt, party2SignedAt }: DocumentProps) {
-  const { party1, party2, effectiveDate, city, documentDate } = data as unknown as NdaData;
+function NdaGenericDocument({ data, party1SignedAt, party2SignedAt }: DocumentProps) {
+  const d = data as unknown as NdaGenericData;
+  const { party1, party2, effectiveDate, city, documentDate } = d;
+  const categories = d.categoriesInfosConf.split('\n').map(s => s.trim()).filter(Boolean);
 
   return (
     <div style={docStyle}>
@@ -168,28 +222,20 @@ function NdaDocument({ data, party1SignedAt, party2SignedAt }: DocumentProps) {
       <p style={para}>
         <strong>{party2.civility} : {party2.name},</strong><br />
         Demeurant à : <strong>{party2.address}</strong>,<br />
-        Statut : {party2.status}{party2.siren ? ` (numéro de SIREN : ${party2.siren})` : ''},<br />
-        Fonction : <strong>{party2.function}</strong><br />
+        Statut : {party2.status}{party2.siren ? ` (numéro de SIREN : ${party2.siren})` : ''},{party2.function ? <><br />Fonction : <strong>{party2.function}</strong></> : null}<br />
         Ci-après dénommé <strong>« le Collaborateur »</strong>,
       </p>
 
       <hr style={{ border: 'none', borderTop: '1px solid #d1d5db', margin: '1.5rem 0' }} />
 
       <p style={{ ...articleTitle, borderBottom: 'none', marginTop: 0 }}>PRÉAMBULE</p>
-      <p style={para}>Dans le cadre de ses activités, la Société est amenée à confier au Collaborateur des missions de <strong>développement informatique</strong>, impliquant l'accès à des informations sensibles, techniques et stratégiques.</p>
-      <p style={para}>Ces informations nécessitent une protection particulière afin d'éviter toute utilisation ou divulgation non autorisée.</p>
+      <p style={para}>{d.contexte}</p>
       <p style={{ ...para, marginBottom: 0 }}>Il a donc été convenu ce qui suit.</p>
 
       <p style={articleTitle}>ARTICLE 1 – DÉFINITION DES INFORMATIONS CONFIDENTIELLES</p>
       <p style={para}>Sont considérées comme <strong>Informations Confidentielles</strong>, sans que cette liste soit limitative :</p>
       <ul style={ul}>
-        <li style={li}>le code source, code objet, scripts, bibliothèques, algorithmes, API, architectures logicielles ;</li>
-        <li style={li}>les bases de données, schémas, modèles, structures et contenus ;</li>
-        <li style={li}>les spécifications fonctionnelles et techniques ;</li>
-        <li style={li}>les méthodes de développement, outils internes, environnements, procédures ;</li>
-        <li style={li}>les informations commerciales, financières, contractuelles ou stratégiques ;</li>
-        <li style={li}>les données clients, utilisateurs ou partenaires ;</li>
-        <li style={li}>toute information identifiée comme confidentielle ou dont le caractère confidentiel est raisonnablement identifiable.</li>
+        {categories.map((cat, i) => <li key={i} style={li}>{cat} ;</li>)}
       </ul>
       <p style={para}>Ces informations peuvent être communiquées <strong>oralement, par écrit, sous forme numérique ou sur tout autre support</strong>.</p>
 
@@ -199,7 +245,7 @@ function NdaDocument({ data, party1SignedAt, party2SignedAt }: DocumentProps) {
         <li style={li}><strong>Garder strictement confidentielles</strong> toutes les Informations Confidentielles ;</li>
         <li style={li}><strong>Ne pas les divulguer</strong>, directement ou indirectement, à des tiers, sans autorisation écrite préalable de la Société ;</li>
         <li style={li}><strong>Ne les utiliser que dans le strict cadre de sa mission</strong> pour la Société ;</li>
-        <li style={li}><strong>Ne pas les exploiter à des fins personnelles ou pour le compte d'un tiers</strong>. Est considéré comme tiers toute personne physique ou morale autre que la Société.</li>
+        <li style={li}><strong>Ne pas les exploiter à des fins personnelles ou pour le compte d'un tiers</strong>.</li>
       </ol>
 
       <p style={articleTitle}>ARTICLE 3 – PROTECTION DES INFORMATIONS</p>
@@ -224,14 +270,18 @@ function NdaDocument({ data, party1SignedAt, party2SignedAt }: DocumentProps) {
 
       <p style={articleTitle}>ARTICLE 6 – DURÉE</p>
       <p style={para}>Le présent accord prend effet à compter du <strong>{fmtDate(effectiveDate)}</strong>.</p>
-      <p style={para}>L'obligation de confidentialité demeure en vigueur <strong>pendant toute la durée de la collaboration et pendant une durée de cinq (5) ans après sa cessation</strong>, sauf si les Informations Confidentielles tombent dans le domaine public plus tôt.</p>
+      <p style={para}>
+        L'obligation de confidentialité demeure en vigueur{' '}
+        <strong>pendant toute la durée de la collaboration et pendant une durée de {d.dureeAns === 1 ? 'un (1) an' : `${d.dureeAns === 2 ? 'deux' : d.dureeAns === 3 ? 'trois' : d.dureeAns === 4 ? 'quatre' : d.dureeAns === 5 ? 'cinq' : d.dureeAns} (${d.dureeAns}) ans`} après sa cessation</strong>,
+        {' '}sauf si les Informations Confidentielles tombent dans le domaine public plus tôt.
+      </p>
 
       <p style={articleTitle}>ARTICLE 7 – MUTATION OU CHANGEMENT DE STATUT</p>
       <p style={para}>Le présent accord demeure applicable en cas de modification du statut du Collaborateur ou de poursuite de la collaboration sous une autre forme contractuelle.</p>
 
       <p style={articleTitle}>ARTICLE 8 – DROIT APPLICABLE ET JURIDICTION</p>
       <p style={para}>Le présent accord est soumis au <strong>droit français</strong>.</p>
-      <p style={para}>Tout litige relatif à son interprétation ou à son exécution relève de la compétence exclusive des <strong>tribunaux de Paris</strong>.</p>
+      <p style={para}>Tout litige relatif à son interprétation ou à son exécution relève de la compétence exclusive des <strong>tribunaux de {d.juridiction}</strong>.</p>
 
       <hr style={{ border: 'none', borderTop: '2px solid #1a1a1a', margin: '2rem 0 1.5rem' }} />
       <p style={{ ...para, fontFamily: 'system-ui, sans-serif' }}><strong>Fait à {city}, le {fmtDate(documentDate)}</strong></p>
@@ -245,26 +295,27 @@ function NdaDocument({ data, party1SignedAt, party2SignedAt }: DocumentProps) {
   );
 }
 
-export const nda: Template = {
-  id: 'nda',
-  label: 'Accord de confidentialité',
-  description: 'NDA entre une société et un collaborateur.',
+export const ndaGeneric: Template = {
+  id: 'nda-generic',
+  category: 'Accord de confidentialité',
+  label: 'NDA — Générique',
+  description: 'Contexte et catégories d\'informations confidentielles entièrement libres. Adaptable à tout secteur d\'activité.',
   party1Label: 'La Société',
   party2Label: 'Le Collaborateur',
   defaultData,
-  getParty1Name: (data) => (data as unknown as NdaData).party1.representativeName,
+  getParty1Name: (data) => (data as unknown as NdaGenericData).party1.representativeName,
   getParty2Name: (data) => {
-    const d = data as unknown as NdaData;
+    const d = data as unknown as NdaGenericData;
     return `${d.party2.civility} ${d.party2.name}`;
   },
   getParty1ConsentText: (data) => {
-    const d = data as unknown as NdaData;
+    const d = data as unknown as NdaGenericData;
     return <>Je, <strong>{d.party1.representativeName}</strong>, reconnais avoir lu et accepté les termes de cet accord de confidentialité et le signe électroniquement en tant que représentant de <strong>{d.party1.name}</strong>.</>;
   },
   getParty2ConsentText: (data) => {
-    const d = data as unknown as NdaData;
+    const d = data as unknown as NdaGenericData;
     return <>Je, <strong>{d.party2.civility} {d.party2.name}</strong>, reconnais avoir lu et accepté les termes de cet accord de confidentialité et le signe électroniquement.</>;
   },
-  Form: NdaForm,
-  Document: NdaDocument,
+  Form: NdaGenericForm,
+  Document: NdaGenericDocument,
 };

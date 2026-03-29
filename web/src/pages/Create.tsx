@@ -95,31 +95,43 @@ export default function Create() {
               </div>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1rem' }}>
-              {templateList.map((t) => (
-                <button
-                  key={t.id}
-                  type="button"
-                  onClick={() => selectTemplate(t)}
-                  style={{
-                    textAlign: 'left',
-                    background: 'var(--white)',
-                    border: '1.5px solid var(--border)',
-                    borderRadius: 'var(--radius)',
-                    padding: '1.25rem 1.5rem',
-                    cursor: 'pointer',
-                    transition: 'border-color 0.12s, box-shadow 0.12s',
-                    boxShadow: 'var(--shadow-sm)',
-                  }}
-                  onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.borderColor = 'var(--black)'; (e.currentTarget as HTMLButtonElement).style.boxShadow = 'var(--shadow)'; }}
-                  onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.borderColor = 'var(--border)'; (e.currentTarget as HTMLButtonElement).style.boxShadow = 'var(--shadow-sm)'; }}
-                >
-                  <div style={{ fontWeight: 700, fontSize: '0.9375rem', marginBottom: '0.4rem' }}>{t.label}</div>
-                  <div style={{ fontSize: '0.8125rem', color: 'var(--muted)', lineHeight: 1.5 }}>{t.description}</div>
-                  <div style={{ marginTop: '1rem', fontSize: '0.8125rem', color: 'var(--black)', fontWeight: 500 }}>Créer →</div>
-                </button>
-              ))}
-            </div>
+            {Object.entries(
+              templateList.reduce<Record<string, typeof templateList>>((acc, t) => {
+                (acc[t.category] ??= []).push(t);
+                return acc;
+              }, {})
+            ).map(([category, group]) => (
+              <div key={category} style={{ marginBottom: '2rem' }}>
+                <div style={{ fontSize: '0.6875rem', fontWeight: 600, letterSpacing: '0.09em', textTransform: 'uppercase', color: 'var(--subtle)', marginBottom: '0.75rem' }}>
+                  {category}
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '0.75rem' }}>
+                  {group.map((t) => (
+                    <button
+                      key={t.id}
+                      type="button"
+                      onClick={() => selectTemplate(t)}
+                      style={{
+                        textAlign: 'left',
+                        background: 'var(--white)',
+                        border: '1.5px solid var(--border)',
+                        borderRadius: 'var(--radius)',
+                        padding: '1.25rem 1.5rem',
+                        cursor: 'pointer',
+                        transition: 'border-color 0.12s, box-shadow 0.12s',
+                        boxShadow: 'var(--shadow-sm)',
+                      }}
+                      onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.borderColor = 'var(--black)'; (e.currentTarget as HTMLButtonElement).style.boxShadow = 'var(--shadow)'; }}
+                      onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.borderColor = 'var(--border)'; (e.currentTarget as HTMLButtonElement).style.boxShadow = 'var(--shadow-sm)'; }}
+                    >
+                      <div style={{ fontWeight: 700, fontSize: '0.9375rem', marginBottom: '0.4rem' }}>{t.label}</div>
+                      <div style={{ fontSize: '0.8125rem', color: 'var(--muted)', lineHeight: 1.5 }}>{t.description}</div>
+                      <div style={{ marginTop: '1rem', fontSize: '0.8125rem', color: 'var(--black)', fontWeight: 500 }}>Créer →</div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ))}
           </div>
         </div>
         <Footer />

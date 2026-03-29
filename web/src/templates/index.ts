@@ -1,5 +1,6 @@
 import type { ReactNode, FC } from 'react';
-import { nda } from './nda';
+import { ndaDev } from './nda-dev';
+import { ndaGeneric } from './nda-generic';
 import { prestation } from './prestation';
 
 export interface FormProps {
@@ -15,6 +16,7 @@ export interface DocumentProps {
 
 export interface Template {
   id: string;
+  category: string;
   label: string;
   description: string;
   party1Label: string;
@@ -28,5 +30,5 @@ export interface Template {
   Document: FC<DocumentProps>;
 }
 
-export const templates: Record<string, Template> = { nda, prestation };
-export const templateList: Template[] = [nda, prestation];
+export const templates: Record<string, Template> = { 'nda-dev': ndaDev, 'nda-generic': ndaGeneric, prestation };
+export const templateList: Template[] = [ndaDev, ndaGeneric, prestation];
