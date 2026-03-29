@@ -2,7 +2,16 @@
 
 [Français](#fr--français) | [English](#en--english)
 
-<video src="docs/preview.mp4" controls width="100%"></video>
+<table>
+  <tr>
+    <td align="center"><img src="docs/screen-home.png" width="380" alt="Accueil" /><br/><sub>Accueil · Home</sub></td>
+    <td align="center"><img src="docs/screen-picker.png" width="380" alt="Choix du template" /><br/><sub>Choix du template · Template picker</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="docs/screen-form.png" width="380" alt="Formulaire" /><br/><sub>Formulaire · Form</sub></td>
+    <td align="center"><img src="docs/screen-signed.png" width="380" alt="Contrat signé" /><br/><sub>Contrat signé · Signed contract</sub></td>
+  </tr>
+</table>
 
 
 ---
