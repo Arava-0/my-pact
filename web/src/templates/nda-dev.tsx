@@ -242,8 +242,8 @@ function NdaDevDocument({ data, party1SignedAt, party2SignedAt }: DocumentProps)
       <p style={para}>Tout litige relatif à son interprétation ou à son exécution relève de la compétence exclusive des <strong>tribunaux de {juridiction}</strong>.</p>
 
       <hr style={{ border: 'none', borderTop: '2px solid #1a1a1a', margin: '2rem 0 1.5rem' }} />
-      <p style={{ ...para, fontFamily: 'system-ui, sans-serif' }}><strong>Fait à {city}, le {fmtDate(documentDate)}</strong></p>
-      <p style={{ ...para, fontFamily: 'system-ui, sans-serif', marginBottom: '2rem' }}>En deux exemplaires originaux.</p>
+      <p style={{ ...para, fontFamily: 'system-ui, sans-serif' }}><strong>Document créé à {city}, le {fmtDate(documentDate)}</strong></p>
+      <p style={{ ...para, fontFamily: 'system-ui, sans-serif', marginBottom: '2rem' }}>En un unique exemplaire non-modifiable en ligne.</p>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
         <SignatureBlock label="La Société" name={party1.representativeName} signedAt={party1SignedAt} />

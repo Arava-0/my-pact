@@ -287,8 +287,8 @@ function PrestationDocument({ data, party1SignedAt, party2SignedAt }: DocumentPr
       <p style={para}>Le présent contrat est soumis au <strong>droit français</strong>. Tout litige sera soumis aux tribunaux compétents.</p>
 
       <hr style={{ border: 'none', borderTop: '2px solid #1a1a1a', margin: '2rem 0 1.5rem' }} />
-      <p style={{ ...para, fontFamily: 'system-ui, sans-serif' }}><strong>Fait à {d.city}, le {fmtDate(d.documentDate)}</strong></p>
-      <p style={{ ...para, fontFamily: 'system-ui, sans-serif', marginBottom: '2rem' }}>En deux exemplaires originaux.</p>
+      <p style={{ ...para, fontFamily: 'system-ui, sans-serif' }}><strong>Document créé à {d.city}, le {fmtDate(d.documentDate)}</strong></p>
+      <p style={{ ...para, fontFamily: 'system-ui, sans-serif', marginBottom: '2rem' }}>En un unique exemplaire non-modifiable en ligne.</p>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
         <SignatureBlock label="Le Client" name={clientName} signedAt={party1SignedAt} />
