@@ -200,18 +200,13 @@ export default function Contract() {
             {uploadError && <p className="error-text" style={{ marginBottom: '0.75rem' }}>{uploadError}</p>}
 
             {editable && (
-              <label style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '0.4rem',
-                cursor: uploading ? 'not-allowed' : 'pointer',
-                opacity: uploading ? 0.5 : 1,
-              }}>
+              <>
                 <button
                   type="button"
                   className="btn btn-ghost"
-                  style={{ fontSize: '0.875rem', pointerEvents: 'none' }}
+                  style={{ fontSize: '0.875rem' }}
                   disabled={uploading}
+                  onClick={() => fileInputRef.current?.click()}
                 >
                   {uploading ? 'Envoi…' : '+ Joindre un document'}
                 </button>
@@ -223,7 +218,7 @@ export default function Contract() {
                   onChange={handleFileChange}
                   disabled={uploading}
                 />
-              </label>
+              </>
             )}
 
             {!editable && contract.files.length === 0 && (
