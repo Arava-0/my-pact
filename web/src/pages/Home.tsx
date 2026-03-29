@@ -40,7 +40,7 @@ export default function Home() {
 
         <Link to="/create">
           <button className="btn btn-primary" style={{ fontSize: '1rem', padding: '0.875rem 2rem' }}>
-            Créer un accord de confidentialité →
+            Créer un nouveau contrat →
           </button>
         </Link>
 
